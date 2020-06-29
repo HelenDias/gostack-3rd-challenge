@@ -13,8 +13,10 @@ function App() {
   }, [])
 
   async function handleAddRepository() {
+    const index = repositories?.length + 1 || 1
+
     const data = {
-      title: `Repositório ${repositories.length + 1}`,
+      title: `Repositório ${index}`,
       techs: ['Tecnologia 1', 'Tecnologia 2'],
       url: 'http://teste.com/teste'
     }
@@ -25,22 +27,25 @@ function App() {
   }
 
   async function handleRemoveRepository(id) {
-    // TODO
+    try {
+      await api.delete(`repositories/${id}`)
+
+      const rep = repositories.filter(repository => repository.id !== id)
+
+      setRepositories(rep)
+    } catch (e) {
+      return alert(`Error on delete repository, [${e}]`)
+    }
   }
 
   return (
     <div>
       <ul data-testid="repository-list">
         {repositories.map(repository =>
-          <>
-            <li key={repository.id}>
-              {repository.title}
-            </li>
-
-            <button onClick={() => handleRemoveRepository(1)}>
-              Remover
-            </button>
-          </>
+          <li key={repository.id}>
+            {repository.title}
+            <button onClick={() => handleRemoveRepository(repository.id)}>Remover</button>
+          </li>
         )}
       </ul>
 
